@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <title>PingPong</title>
+  </head>
+  <body>
+    <div id="intro">
+      <h1>Ping-Pong</h1>
+      <h2>Use the arrow keys to control your paddle!</h2>
+      <input
+        placeholder="Your name"
+        type="text"
+        id="name"
+        name="name"
+        required
+      />
+      <button id="start-button" disabled>Start Game</button>
+    </div>
+
+    <div id="game-container">
+      <div id="scoreboard">
+        <p><span id="player-score">0</span></p>
+        <p>Comp: <span id="computer-score">0</span></p>
+      </div>
+
+      <div id="game-screen"></div>
+    </div>
+
+    <div id="game-end">
+      <h1 id="winner"></h1>
+      <br />
+      <button id="restart-button">Restart</button>
+    </div>
+
+    <script type="text/javascript" src="./src/player.js"></script>
+    <script type="text/javascript" src="./src/opponent.js"></script>
+    <script type="text/javascript" src="./src/ball.js"></script>
+    <script type="text/javascript" src="./src/score.js"></script>
+    <script type="text/javascript" src="./src/game.js"></script>
+    <script type="text/javascript" src="./src/leaderboard.js"></script>
+    <script type="text/javascript" src="./src/script.js"></script>
+  </body>
+</html>

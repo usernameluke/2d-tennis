@@ -46,6 +46,17 @@ class Game {
     this.gameIntervalId;
     this.gameLoopFrequency = 1000 / 60;
     this.ballRespawning = false;
+
+    //game audio controls
+    this.playerHit = new Audio();
+    this.playerHit.src = "assets/Player.mp3";
+    this.playerHit.volume = 0.5;
+    this.compHit = new Audio();
+    this.compHit.src = "assets/Comp.mp3"
+    this.compHit.volume = 0.5;
+    this.cheer = new Audio();
+    this.cheer.src = "assets/QuietPlease.mp3";
+    this.cheer.volume = 0.5
   }
 
   start() {
@@ -114,8 +125,10 @@ class Game {
     if (playerCollision) {
       if (playerCollision === "side") {
         this.ball.speedX *= -1;
+        this.playerHit.play();
       } else {
         this.ball.speedY *= -1;
+        this.playerHit.play();
       }
     }
 
@@ -124,8 +137,10 @@ class Game {
     if (compCollision) {
       if (compCollision === "side") {
         this.ball.speedX *= -1;
+        this.compHit.play();
       } else {
         this.ball.speedY *= -1;
+        this.compHit.play();
       }
     }
 
@@ -142,6 +157,8 @@ class Game {
       this.countdown();
       //Reset paddle positions
       this.resetPaddles();
+
+      this.cheer.play();
 
       //Make ball serve towards point winner after 3 seconds
       setTimeout(() => {
@@ -162,6 +179,8 @@ class Game {
       this.countdown();
       //Reset paddle positions
       this.resetPaddles();
+
+      this.cheer.play();
 
       //Make ball serve towards point winner after 3 seconds
       setTimeout(() => {

@@ -1,5 +1,5 @@
 class Game {
-  constructor() {
+  constructor(difficulty) {
     //Screen controls
     this.startScreen = document.getElementById("intro");
     this.gameContainer = document.getElementById("game-container");
@@ -11,9 +11,19 @@ class Game {
     // player paddle starting position
     this.player = new Player(this.gameScreen, 0, 250, 10, 75);
     // compPlayer paddle starting position
-    this.compPlayer = new Opponent(this.gameScreen, 780, 250, 10, 75);
+    this.compPlayer = new Opponent(
+      this.gameScreen,
+      780,
+      250,
+      10,
+      75,
+      difficulty
+    );
     // create empty array of balls to be added to later
-    this.ball = [];
+    this.ball = null;
+
+    //Game difficulty (default)
+    this.difficulty = difficulty;
 
     //game screen width and height
     this.height = 500;
@@ -35,6 +45,7 @@ class Game {
     this.gameIsOver = false;
     this.gameIntervalId;
     this.gameLoopFrequency = 1000 / 60;
+    this.ballRespawning = false;
   }
 
   start() {
@@ -51,6 +62,10 @@ class Game {
     this.scoreboard.style.gap = "50px";
     this.playerScoreHTML.innerText = `${this.playerName}: ` + this.playerScore;
 
+    //Difficulty setting for the ball and opponent
+    this.ball = new Ball(this.gameScreen, this.difficulty);
+    // this.Opponent = new Opponent (this.gameScreen, 800, 200, 20, 100, this.difficulty);
+
     //Starting game loop
     this.gameIntervalId = setInterval(() => {
       this.gameLoop();
@@ -58,75 +73,101 @@ class Game {
   }
 
   gameLoop() {
-    // running the update function on every frame
-    this.update();
-
     // if the game is over, stop the loop
     if (this.gameIsOver) {
       clearInterval(this.gameIntervalId);
+    } else {
+      this.update();
     }
+  }
+
+  setDifficulty(level) {
+    this.difficulty = level;
+  }
+
+  resetPaddles() {
+    this.player.left = 0;
+    this.player.top = 250;
+    this.player.updatePosition();
+
+    this.compPlayer.left = 780;
+    this.compPlayer.top = 250;
+    this.compPlayer.updatePosition();
   }
 
   update() {
     //move the player
     this.player.move();
 
-    //Based on a random threshold and when there are no balls in play, create a new ball
-    if (Math.random() > 0.85 && this.ball.length === 0) {
-      this.ball.push(new Ball(this.gameScreen));
+    // Make the ball move if it isn't respawning
+    if (!this.ballRespawning) {
+      this.ball.move();
     }
 
-    // Loop through the ball array to check for collisions
-    for (let i = 0; i < this.ball.length; i++) {
-      const ball = this.ball[i];
+    // Make compPlayer chase the ball if it isn't respawning
+    if (!this.ballRespawning) {
+      this.compPlayer.updateAI(this.ball);
+    }
 
-      // Make the ball move
-      ball.move();
-
-      // Make compPlayer chase the ball
-      this.compPlayer.updateAI(ball);
-
-      // Handle player collision
-      const playerCollision = this.player.playerCollide(ball);
-      if (playerCollision) {
-        if (playerCollision === "side") {
-          ball.speedX *= -1;
-        } else {
-          ball.speedY *= -1;
-        }
+    // Handle player collision
+    const playerCollision = this.player.playerCollide(this.ball);
+    if (playerCollision) {
+      if (playerCollision === "side") {
+        this.ball.speedX *= -1;
+      } else {
+        this.ball.speedY *= -1;
       }
+    }
 
-      // Handle computer collision
-      const compCollision = this.compPlayer.compCollide(ball);
-      if (compCollision) {
-        if (compCollision === "side") {
-          ball.speedX *= -1;
-        } else {
-          ball.speedY *= -1;
-        }
+    // Handle computer collision
+    const compCollision = this.compPlayer.compCollide(this.ball);
+    if (compCollision) {
+      if (compCollision === "side") {
+        this.ball.speedX *= -1;
+      } else {
+        this.ball.speedY *= -1;
       }
+    }
 
-      //Scoring:
-      //If the ball goes past the left baseline of the court
-      if (ball.left <= 0) {
-        //Increase compScore
-        this.compScore++;
-        //Change the compScore value on the DOM
-        this.compScoreHTML.innerText = this.compScore;
-        //Make ball serve towards point winner
-        ball.resetBall("right");
-      }
+    //Scoring:
+    //If the ball goes past the left baseline of the court
+    if (this.ball.left <= -20 && !this.ballRespawning) {
+      //Increase compScore
+      this.compScore++;
+      //Change the compScore value on the DOM
+      this.compScoreHTML.innerText = this.compScore;
+      //Stop ball moving
+      this.ballRespawning = true;
+      //Start countdown
+      this.countdown();
+      //Reset paddle positions
+      this.resetPaddles();
 
-      //If the ball goes past the right baseline of the court
-      if (ball.left >= this.width) {
-        //Increase playerScore
-        this.playerScore++;
-        //Change the playerScore value on the DOM
-        this.playerScoreHTML.innerText =
-          `${this.playerName}:` + this.playerScore;
-        //Make ball serve towards point winner
-        ball.resetBall("left");
-      }
+      //Make ball serve towards point winner after 3 seconds
+      setTimeout(() => {
+        this.ball.resetBall("right");
+        this.ballRespawning = false;
+      }, 3000);
+    }
+
+    //If the ball goes past the right baseline of the court
+    if (this.ball.left >= this.width && !this.ballRespawning) {
+      //Increase compScore
+      this.playerScore++;
+      //Change the compScore value on the DOM
+      this.playerScoreHTML.innerText = `${this.playerName}: ${this.playerScore}`;
+      //Stop ball moving
+      this.ballRespawning = true;
+      //Start countdown
+      this.countdown();
+      //Reset paddle positions
+      this.resetPaddles();
+
+      //Make ball serve towards point winner after 3 seconds
+      setTimeout(() => {
+        this.ball.resetBall("left");
+        this.ballRespawning = false;
+      }, 3000);
     }
 
     // If score = 11 for someone, end the game
@@ -135,11 +176,42 @@ class Game {
     }
   }
 
+  countdown() {
+    //set counter
+    let count = 3;
+    //timer image
+    this.element = document.createElement("div");
+    this.element.style.position = "absolute";
+    this.element.style.fontSize = "120px";
+    this.element.style.color = "white";
+    this.element.style.padding = "20px";
+    this.element.style.top = "50%";
+    this.element.style.left = "50%";
+    this.element.style.transform = "translate(-50%, -50%)";
+
+    //add to gameScreen
+    this.gameScreen.appendChild(this.element);
+    //make timer image print counter
+    this.element.textContent = count;
+
+    //create countdown
+    const countdownInterval = setInterval(() => {
+      //every second decrease - stop with "1"
+      count--;
+      if (count > 0) {
+        this.element.textContent = count;
+      } else {
+        clearInterval(countdownInterval);
+        this.element.remove();
+      }
+    }, 1000);
+  }
+
   endGame() {
     // Remove players and ball elements from DOM
     this.player.element.remove();
     this.compPlayer.element.remove();
-    this.ball.forEach((ball) => ball.element.remove());
+    this.ball.element.remove();
 
     // Set flag to true, so the loop stops
     this.gameIsOver = true;

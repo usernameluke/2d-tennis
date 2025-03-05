@@ -1,5 +1,5 @@
 class Opponent {
-  constructor(gameScreen, left, top, width, height) {
+  constructor(gameScreen, left, top, width, height, difficulty) {
     //gameScreen div reference
     this.gameScreen = gameScreen;
 
@@ -9,9 +9,19 @@ class Opponent {
     this.width = width;
     this.height = height;
 
-    //Paddle movement control
-    this.directionY = 0;
-    this.directionX = 0;
+    // Difficulty for reference
+    this.difficulty = difficulty;
+
+    // Difficulty settings
+    const speeds = {
+      easy: { directionY: 5, directionX: 5 },
+      medium: { directionY: 6, directionX: 6 },
+      hard: { directionY: 7, directionX: 7 },
+    };
+
+    // Set the speed of movement based on difficulty
+    this.directionY = speeds[difficulty].directionY;
+    this.directionX = speeds[difficulty].directionX;
 
     //Paddle image
     this.element = document.createElement("div");
@@ -23,84 +33,98 @@ class Opponent {
     this.element.style.left = `${this.left}px`;
     this.element.style.top = `${this.top}px`;
 
-    //Adding paddle image to the gameScreen
+    // Add paddle image to the gameScreen
     this.gameScreen.appendChild(this.element);
   }
 
   move() {
-    //Update paddle position based on directionY
+    // Update paddle's position
     this.top += this.directionY;
     this.left += this.directionX;
 
-    //Ensure paddle stays wiithin the gameScreen:
+    // Ensure paddle stays within the gameScreen:
     //Handle top of court
-    if (this.top <= 5) {
-      this.top = 0 + 5;
-    }
-
+    if (this.top <= 5) this.top = 5;
     //Handle bottom of court
-    if (this.top > this.gameScreen.offsetHeight - 90) {
-      this.top = this.gameScreen.offsetHeight - 90;
-    }
-
+    if (this.top > this.gameScreen.offsetHeight - this.height - 5)
+      this.top = this.gameScreen.offsetHeight - this.height - 5;
     //Handle left (centre) of court
-    if (this.left <= 400) {
-      this.left = 0 + 400;
-    }
-
+    if (this.left <= 400) this.left = 400;
     //Handle right of court
-    if (this.left >= 800) {
-      this.left = 800;
-    }
+    if (this.left >= 800 - this.width) this.left = 800 - this.width;
 
-    //Update paddle position on the screen
+    // Update paddle position on screen
     this.updatePosition();
-  }
-
-  updatePosition() {
-    this.element.style.top = `${this.top}px`;
-    this.element.style.left = `${this.left}px`;
   }
 
   //Make compPLayer move by itself
   updateAI(ball) {
-    //Identify the middle of compPlayer's paddle along the 'y' axis
+    // Get the center of the paddle
     const paddleCentreY = this.top + this.height / 2;
-    //Identify the middle of compPlayer's paddle along the 'x' axis
     const paddleCentreX = this.left + this.width / 2;
-    //Identify the middle of the ball along the 'y' axis
+
+    // Get the center of the ball
     const ballCentreY = ball.top + ball.height / 2;
-    //Identify the middle of the ball along the 'x' axis
     const ballCentreX = ball.left + ball.width / 2;
 
-    //Check how far the ball is from the paddle:
-    //If the distance is bigger than 10px as an absolute number (so the distance, be it positive or negative from 0), the robot moves towards it - Subtraction of the ball's centre position on the 'y' axis and the paddle's center position on the 'y' axis gives us the difference
+    // Vertical movement based on the ball's position
     if (Math.abs(ballCentreY - paddleCentreY) > 10) {
-      if (ballCentreY > paddleCentreY) {  //If the ball is below the paddle, it moves down at given speed
-        this.directionY = 7;
-      } else {                            //If the ball is above the paddle, it moves up at given speed
-        this.directionY = -7;
-      }
-    } else {                              //If the ball is very close (within 10px), the robot stops moving as it's lined up for the shot
-      this.directionY = 0; // Stop moving if close enough
-    }
-
-    //If the distance is bigger than 10px as an absolute number (so the distance, be it positive or negative from 0), the robot moves towards it - Subtraction of the ball's centre position on the 'x' axis and the paddle's center position on the 'x' axis gives us the difference
-    if (Math.abs(ballCentreX - paddleCentreX) > 10) {
-      //If the ball is left of the paddle, it moves right at given speed
-      if (ballCentreX > paddleCentreX) {
-        this.directionX = 7;
-        //If the ball is right of the paddle, it moves left at given speed
+      if (ballCentreY > paddleCentreY) {
+        // Move down
+        if (this.difficulty === "easy") {
+          this.directionY = 2;
+        } else if (this.difficulty === "medium") {
+          this.directionY = 4;
+        } else {
+          this.directionY = 7;
+        }
       } else {
-        this.directionX = -3;
+        // Move up
+        if (this.difficulty === "easy") {
+          this.directionY = -2;
+        } else if (this.difficulty === "medium") {
+          this.directionY = -4;
+        } else {
+          this.directionY = -7;
+        }
       }
-      //If the ball is very close (within 10px), the robot stops moving as it's lined up for the shot
+      // Stop moving if close enough
     } else {
-      this.directionX = 0; // Stop moving if close enough
+      this.directionY = 0;
     }
 
-    //The ball moves accordingly
+    // Horiztonal movement based on the ball's position
+    if (Math.abs(ballCentreX - paddleCentreX) > 10) {
+      if (ballCentreX > paddleCentreX) {
+        // Move right
+        if (this.difficulty === "easy") {
+          this.directionX = 2;
+        } else if (this.difficulty === "medium") {
+          this.directionX = 4;
+        } else {
+          this.directionX = 7;
+        }
+      } else {
+        // Move left
+        if (this.difficulty === "easy") {
+          this.directionX = -2;
+        } else if (this.difficulty === "medium") {
+          this.directionX = -4;
+        } else {
+          this.directionX = -7;
+        }
+      }
+      // Stop moving if close enough
+    } else {
+      this.directionX = 0;
+    }
+
     this.move();
+  }
+
+  updatePosition() {
+    this.element.style.left = `${this.left}px`;
+    this.element.style.top = `${this.top}px`;
   }
 
   compCollide(ball) {
@@ -109,21 +133,26 @@ class Opponent {
     const ballRect = ball.element.getBoundingClientRect();
 
     if (
-      compRect.right > ballRect.left &&   // Ball's left edge is left of paddle's right edge
-      compRect.bottom > ballRect.top &&   // Ball's right edge is right of paddle's left edge
-      compRect.left < ballRect.right &&   // Ball's top edge is above paddle's bottom edge
-      compRect.top < ballRect.bottom      // Ball's bottom edge is below paddle's top edge
+      // Ball's left edge is left of paddle's right edge
+      compRect.right > ballRect.left &&
+      // Ball's right edge is right of paddle's left edge
+      compRect.bottom > ballRect.top &&
+      // Ball's top edge is above paddle's bottom edge
+      compRect.left < ballRect.right &&
+      // Ball's bottom edge is below paddle's top edge
+      compRect.top < ballRect.bottom
     ) {
-      // Determine collision side
-      if (ballRect.right >= compRect.left && ball.speedX > 0) { //Ball’s rightside is touching paddle's left && ball is moving right
+      // Determine collision side:
+      //Ball’s rightside is touching paddle's left && ball is moving right
+      if (ballRect.right >= compRect.left && ball.speedX > 0) {
         return "side";
       }
-
-      if (ballRect.bottom >= compRect.top && ball.speedY > 0) { //Ball’s bottom is touching paddle's top && ball is moving down
+      //Ball’s bottom is touching paddle's top && ball is moving down
+      if (ballRect.bottom >= compRect.top && ball.speedY > 0) {
         return "top";
       }
-
-      if (ballRect.top <= compRect.bottom && ball.speedY < 0) { //Ball’s top is touching paddle's bottom && ball is moving up
+      //Ball’s top is touching paddle's bottom && ball is moving up
+      if (ballRect.top <= compRect.bottom && ball.speedY < 0) {
         return "bottom";
       }
     }

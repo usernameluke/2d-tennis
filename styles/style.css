@@ -38,13 +38,14 @@ h2 {
   text-align: center;
   border-style: none;
   border-radius: 5px;
+  text-transform: capitalize;
 }
 
 #name::placeholder {
   color: black;
 }
 
-#start-button {
+#easy, #medium, #hard {
   cursor: pointer;
   text-transform: capitalize;
   font-size: 30px;

@@ -68,21 +68,24 @@ class Player {
     const ballRect = ball.element.getBoundingClientRect();
 
     if (
-      playerRect.right > ballRect.left &&   // Ball's left edge is left of paddle's right edge
-      playerRect.left < ballRect.right &&   // Ball's right edge is right of paddle's left edge
-      playerRect.bottom > ballRect.top &&   // Ball's top edge is above paddle's bottom edge
-      playerRect.top < ballRect.bottom      // Ball's bottom edge is below paddle's top edge
-    ){
+      playerRect.right > ballRect.left && // Ball's left edge is left of paddle's right edge
+      playerRect.left < ballRect.right && // Ball's right edge is right of paddle's left edge
+      playerRect.bottom > ballRect.top && // Ball's top edge is above paddle's bottom edge
+      playerRect.top < ballRect.bottom // Ball's bottom edge is below paddle's top edge
+    ) {
       // Determine collision area
-      if (ballRect.left <= playerRect.right && ball.speedX < 0) { //Ball’s leftside is touching paddle's right && ball is moving left
+      if (ballRect.left <= playerRect.right && ball.speedX < 0) {
+        //Ball’s leftside is touching paddle's right && ball is moving left
         return "side";
       }
 
-      if (ballRect.bottom >= playerRect.top && ball.speedY > 0) { //Ball’s bottom is touching paddle's top && ball is moving down
+      if (ballRect.bottom >= playerRect.top && ball.speedY > 0) {
+        //Ball’s bottom is touching paddle's top && ball is moving down
         return "top";
       }
 
-      if (ballRect.top <= playerRect.bottom && ball.speedY < 0) { //Ball’s top is touching paddle's bottom && ball is moving up
+      if (ballRect.top <= playerRect.bottom && ball.speedY < 0) {
+        //Ball’s top is touching paddle's bottom && ball is moving up
         return "bottom";
       }
     }

@@ -72,18 +72,18 @@ class Opponent {
       if (ballCentreY > paddleCentreY) {
         // Move down
         if (this.difficulty === "easy") {
-          this.directionY = 2;
+          this.directionY = 5;
         } else if (this.difficulty === "medium") {
-          this.directionY = 4;
+          this.directionY = 6;
         } else {
           this.directionY = 7;
         }
       } else {
         // Move up
         if (this.difficulty === "easy") {
-          this.directionY = -2;
+          this.directionY = -5;
         } else if (this.difficulty === "medium") {
-          this.directionY = -4;
+          this.directionY = -6;
         } else {
           this.directionY = -7;
         }

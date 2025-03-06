@@ -57,6 +57,9 @@ class Game {
     this.cheer = new Audio();
     this.cheer.src = "assets/QuietPlease.mp3";
     this.cheer.volume = 0.5
+    this.applause = new Audio();
+    this.applause.src = "assets/applause.mp3";
+    this.applause.volume = 0.3;
   }
 
   start() {
@@ -191,6 +194,8 @@ class Game {
 
     // If score = 11 for someone, end the game
     if (this.playerScore === 11 || this.compScore === 11) {
+      this.cheer.pause();
+      this.applause.play();
       this.endGame();
     }
   }

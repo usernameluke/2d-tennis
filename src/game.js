@@ -6,6 +6,7 @@ class Game {
     this.scoreboard = document.getElementById("scoreboard");
     this.gameScreen = document.getElementById("game-screen");
     this.gameEndScreen = document.getElementById("game-end");
+    this.gameLayout = document.getElementById("game-layout");
 
     //game assets:
     // player paddle starting position
@@ -19,7 +20,8 @@ class Game {
       75,
       difficulty
     );
-    // create empty array of balls to be added to later
+    
+    // create ball to be added to later
     this.ball = null;
 
     //Game difficulty (default)
@@ -101,11 +103,11 @@ class Game {
 
   resetPaddles() {
     this.player.left = 0;
-    this.player.top = 250;
+    this.player.top = 233;
     this.player.updatePosition();
 
     this.compPlayer.left = 780;
-    this.compPlayer.top = 250;
+    this.compPlayer.top = 233;
     this.compPlayer.updatePosition();
   }
 
@@ -242,6 +244,7 @@ class Game {
 
     // Hide gameScreen
     this.gameScreen.style.display = "none";
+    this.gameLayout.style.display = "none";
 
     // Show gameEndScreen
     this.gameEndScreen.style.display = "block";

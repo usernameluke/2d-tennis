@@ -1,10 +1,11 @@
 window.onload = function () {
-  //Access/Target buttons/input
+  //Access difficulty buttons/name input
   const easyStartButton = document.getElementById("easy");
   const mediumStartButton = document.getElementById("medium");
   const hardStartButton = document.getElementById("hard");
   const restartButton = document.getElementById("restart-button");
   const playerName = document.getElementById("name");
+
 
   //Create eventlistener for #name (input) which enables the startButton
   playerName.addEventListener("input", () => {
@@ -51,6 +52,7 @@ window.onload = function () {
   window.addEventListener("keydown", (event) => {
     // const possibleKeys = ["ArrowUp", "ArrowDown"];
     const possibleKeys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+
     // Check if the pressed key is in the possibleKeystrokes array
     if (possibleKeys.includes(event.key)) {
       event.preventDefault();
@@ -89,6 +91,118 @@ window.onload = function () {
         //Make directionX's position/speed stop
         case "ArrowLeft":
         case "ArrowRight":
+          game.player.directionX = 0;
+          break;
+      }
+    }
+  });
+
+  window.addEventListener("mousedown", (event) => {
+    
+    const upButton = document.getElementById("up-button");
+    const downButton = document.getElementById("down-button");
+    const leftButton = document.getElementById("left-button");
+    const rightButton = document.getElementById("right-button");
+
+    const possibleButtons = [upButton, downButton, leftButton, rightButton];
+
+    if (possibleButtons.includes(event.target)) {
+      event.preventDefault();
+
+      switch (event.target) {
+        case upButton:
+          game.player.directionY = -5;
+          break;
+        case downButton:
+          game.player.directionY = 5;
+          break;
+        // Update player's directionX (position / speed) based on the key pressed
+        case leftButton:
+          game.player.directionX = -5;
+          break;
+        case rightButton:
+          game.player.directionX = 5;
+          break;
+      }
+    }
+  });
+
+  window.addEventListener("mouseup", (event) => {
+    
+    const upButton = document.getElementById("up-button");
+    const downButton = document.getElementById("down-button");
+    const leftButton = document.getElementById("left-button");
+    const rightButton = document.getElementById("right-button");
+
+    const possibleButtons = [upButton, downButton, leftButton, rightButton];
+
+    if (possibleButtons.includes(event.target)) {
+      event.preventDefault();
+
+      switch (event.target) {
+        case upButton:
+        case downButton:
+          game.player.directionY = 0;
+          break;
+          
+        case leftButton:
+        case rightButton:
+          game.player.directionX = 0;
+          break;
+      }
+    }
+  });
+
+  window.addEventListener("touchstart", (event) => {
+    
+    const upButton = document.getElementById("up-button");
+    const downButton = document.getElementById("down-button");
+    const leftButton = document.getElementById("left-button");
+    const rightButton = document.getElementById("right-button");
+
+    const possibleButtons = [upButton, downButton, leftButton, rightButton];
+
+    if (possibleButtons.includes(event.target)) {
+      event.preventDefault();
+
+      switch (event.target) {
+        case upButton:
+          game.player.directionY = -5;
+          break;
+        case downButton:
+          game.player.directionY = 5;
+          break;
+        // Update player's directionX (position / speed) based on the key pressed
+        case leftButton:
+          game.player.directionX = -5;
+          break;
+        case rightButton:
+          game.player.directionX = 5;
+          break;
+      }
+    }
+  });
+
+  window.addEventListener("touchend", (event) => {
+    
+    const upButton = document.getElementById("up-button");
+    const downButton = document.getElementById("down-button");
+    const leftButton = document.getElementById("left-button");
+    const rightButton = document.getElementById("right-button");
+
+    const possibleButtons = [upButton, downButton, leftButton, rightButton];
+
+    if (possibleButtons.includes(event.target)) {
+      event.preventDefault();
+
+      switch (event.target) {
+        case upButton:
+        case downButton:
+          game.player.directionY = 0;
+          break;
+          
+        case leftButton:
+        case rightButton:
           game.player.directionX = 0;
           break;
       }
